@@ -1,0 +1,9 @@
+#### XxlJob的工作原理
+
+XxlJob核心分为client和admin两个服务。client和admin通过rpc（采用jetty实现）完成服务间的通信。任务的注册以及client与admin服务通信采用XxlJobExecutor来实现，
+这个Executor实现了Spring的ApplicationContextAware接口，在当前bean进行实例化时便开始了服务的通信，以及JobHandler的加载工作。对于Job调度相关的操作后续通过
+admin后台来进行维护。
+
+#### 增强XxlJob实现Job的自动注册思路
+
+定义一个Job注解，当进行JobHandler解析本地注册的过程中调用admin侧的api进行Job的创建工作。主要涉及client端、admin端在api的扩展和通信功能
