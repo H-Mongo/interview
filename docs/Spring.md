@@ -15,4 +15,7 @@
 > [1]-实例化阶段（Instantiation）；[2]-属性赋值阶段（Populate）；[3-7]-初始化阶段（Initialization）；[8]-存活阶段（Alive）；[9-11]
 > -销毁（Destruction）
 
-![bean生命周期示意图](../image/BeanLifecycle.png)
+![bean生命周期示意图](../image/spring/BeanLifecycle.png)
+
+### Spring容器的启动步骤
+
