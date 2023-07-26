@@ -41,9 +41,10 @@
 对于ServiceConfig实例所持有的`protocolSPI属性`很关键，对该属性值进行赋值的时候采用的是SPI机制，具体代码片段如下：
 ![protocolSPI属性](../image/dubbo/service-config-protocolSPI.png)
 ![protocolSPI赋值](../image/dubbo/protocolSPI-value.png)
-以上代码端获取到的Protocol适配类，本质上是通过SPI机制通过JDK，Javasist动态生成的Protocol适配类，
+以上代码端获取到的Protocol适配类，本质上是通过SPI机制通过Jdk，Javassist动态生成的Protocol适配类，生成Adaptive类的生成器类为`AdaptiveClassCodeGenerator`
 
 ```java
+
 package org.apache.dubbo.rpc;
 
 import org.apache.dubbo.rpc.model.ScopeModel;
@@ -94,6 +95,6 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
 
 ##### 4） dubbo中的DubboBootstrap
 
-这个类很关键，是来启动dubbo相关服务的，类似spring中的各种Context类。
+这个类很关键是来启动dubbo服务类似spring中的各种Context类，会完成dubbo启动的一些列前置工作，确定采用的框架模型时哪一种，进行服务模块的部署，建立注册中心长连接
 
 #### 三、ThreadExecutorPool与ForkJoinPool的关系
