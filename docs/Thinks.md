@@ -111,7 +111,8 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
 
 ##### 2）ForkJoinPool
 
-这个异步执行框架对比线程池还是有很大的不同的，它的特点是，所有的Worker都拥有自己的队列并且这个队列是双端的，任务从头部进行添加，Worker从尾部进行获取。
+这个异步执行框架对比线程池还是有很大的不同的，它的特点是，所有的Worker都拥有自己的队列并且这个队列是双端的，
+任务从头部进行添加，而Worker处理自身任务时取决于指定的模式（FIFO或LIFO），窃取任务则采用FIFO！
 它还会有一个非常与众不同的特点就是”任务窃取“机制。JDK9中的协程机制就是采用它实现的！
 > 这个理解起来就是按照工作量进行薪资计算一样，你拥有很多任务可以做当你在窃喜的时候， 由于你的任务执行起来并不简单很耗时，
 > 这时候另外一个同事的工作干完了，他便以帮助高效工作的理由”掠夺“你的任务，最终自我利益最大化！
@@ -122,7 +123,7 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
 
 + ThreadPoolExecutor不能对任务进行拆分，ForkJoinPool可以将一个大任务拆成几个小任务进行执行（典型案例：斐波那契数列计算）
 + ThreadPoolExecutor仅存在任务队列，ForkJoinPool中存在两种队列，一种基本任务队列，一个与线程绑定的队列（当执行任务时，线程会从基本队列中获取任务并加入自己所绑定的任务队列中）
-+
++ ForkJoinPool更加偏向于对任务的拆分，采用了“分而治之”的思想，更适合计算密集型的任务处理
 
 #### 四、spring
 

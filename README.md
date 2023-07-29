@@ -1,2 +1,2 @@
 # interview
-interview guide of mine
+interview guide of mine， content is completing！
