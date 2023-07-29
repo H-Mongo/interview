@@ -97,4 +97,61 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
 
 这个类很关键是来启动dubbo服务类似spring中的各种Context类，会完成dubbo启动的一些列前置工作，确定采用的框架模型时哪一种，进行服务模块的部署，建立注册中心长连接
 
-#### 三、ThreadExecutorPool与ForkJoinPool的关系
+#### 三、关于ThreadPoolExecutor与ForkJoinPool
+
+它们内部维护了一组线程主要职责是进行异步任务逻辑处理，执行线程如果需要开始子流程的异步执行就会将对应子流程包装成一个任务实例并提交给它们来完成异步操作！是提高吞吐和效率的利剑，其实用到他们的地方很多，
+诸如：tomcat的内部线程池，dubbo的线程池，httpclient线程池等等，它们的身影一直都在！
+
+##### 1）线程池（ThreadPoolExecutor）
+
+其内部通过一个通过阻塞队列来存储执行线程提交的任务，并在其实例内部维护了一组worker用来完成对任务异步处理，可以类比工厂的工作模式来进行理解。
+> 例如：现在存在一个加工厂，工厂招收了N名工人为其工作，每一个工人能够完整的完成工厂分配给他们的任务。而工厂的工人都存在一个体质，
+> 拥有了超出常人“负责人“和”自我压榨“的敬业精神，他们在完成自己手上的工作后，会去查看是否还有工作需要被完成，如果存在就获取任务并执行。
+> 工作的过程中，他们都不会互选内耗，很积极，很主动的去完成工作，以工厂的利益最大化，没日没夜地干者工作，丝毫不敢停息。没有工作的时候他们会稍微休息一下下！
+
+##### 2）ForkJoinPool
+
+这个异步执行框架对比线程池还是有很大的不同的，它的特点是，所有的Worker都拥有自己的队列并且这个队列是双端的，任务从头部进行添加，Worker从尾部进行获取。
+它还会有一个非常与众不同的特点就是”任务窃取“机制。JDK9中的协程机制就是采用它实现的！
+> 这个理解起来就是按照工作量进行薪资计算一样，你拥有很多任务可以做当你在窃喜的时候， 由于你的任务执行起来并不简单很耗时，
+> 这时候另外一个同事的工作干完了，他便以帮助高效工作的理由”掠夺“你的任务，最终自我利益最大化！
+
+##### 3）差异点
+
+他们两个虽然都是为了异步任务执行，但是在实现原理和任务执行机制上还是不太一样，所适应的场景也存在细微差别！
+
++ ThreadPoolExecutor不能对任务进行拆分，ForkJoinPool可以将一个大任务拆成几个小任务进行执行（典型案例：斐波那契数列计算）
++ ThreadPoolExecutor仅存在任务队列，ForkJoinPool中存在两种队列，一种基本任务队列，一个与线程绑定的队列（当执行任务时，线程会从基本队列中获取任务并加入自己所绑定的任务队列中）
++
+
+#### 四、spring
+
+##### 1） 如何结合Spring开发
+
+通过对源码的阅读，深刻的认识了Spring提供的SPI扩展机制很强大。可以将我们自定义框架与Spring适配整合始终离不开BeanFactoryPostProcessor、BeanPostProcessor等相关的接口，来扫描我们自定义的bean定义路径加载我们的bean等等!
+在对dubbo源码进行阅读的过程中,就在想一个问题dubbo如何解析dubbo的xml配置文件并加载bean的过程，看到了几个很关键的类`org.apache.dubbo.config.spring.schema.AnnotationBeanDefinitionParser`、
+`org.apache.dubbo.config.spring.beans.factory.annotation.ServiceAnnotationPostProcessor`
+等多个后置处理器，`org.apache.dubbo.config.spring.context.DubboSpringInitializer`是dubbo整合Spring的初始化器！
+之前在阅读mybatis源码的时候也看到了Spring相关后置处理器的代码，那个时候并没有感觉到它的魅力，通过xxl-job，dubbo的源码的阅读让我开始觉得Spring源码中的后置处理器并不简单，很有魔力！
+
+#### 五、关于Java中的Unsafe类
+
+在对源码阅读的过程中，无论是JDK还是还是各大主流的框架源码都存在直接操作Unsafe这个类的场景，即使JDK并不提倡这么操作，仍然存在很多使用者通过它来完成自己的目的！
+在JDK的AtomicXXX的相关的类中，总是能看见它的身影！如下展示了AtomicInteger中对Unsafe实例的引用：
+![AtomicInteger](../image/jdk/AtomicInteger.png)
+众所周知，原子类采用的都是CAS机制实现，同时他们也是线程安全的类型！实现这个能力的核心就是Unsafe的原因，
+通过操作`unsafe.compareAndSwapXXXX`方法， 之所以不建议直接操作是因为它会直接从操作引用类型的指针完成数据修改，稍有不慎就可能出现内存泄露的危险！
+[baeldung Unsafe使用](https://www.baeldung.com/java-unsafe)讲述了这个类的使用方式，并对比了它和采用JDK关键字new进行实例化的区别。
+使用`unsafe#allocateInstance(Class<T> cls)`进行类对象实例化时，仅仅只是为对象分配了内存空间以及属性的默认值处理，并不会执行构造方法中的代码块！
+Unsafe主要的功能点如下：
+
++ 实例化Class获得类对象（实例）
++ 修改私有属性值
++ 抛出异常，但不限制调用者处理该异常，即使是一个受检异常
++ 使用非堆内存，不在受限于JVM内存，GC回收机制，手动释放不可忘！！！
++ 通过`CompareAndSwap`实现CAS无锁操作
++ 利用`Park/Unpark`接口实现线程的切换
+
+
+
+
