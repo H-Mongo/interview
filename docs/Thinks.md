@@ -125,6 +125,11 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
 + ThreadPoolExecutor仅存在任务队列，ForkJoinPool中存在两种队列，一种基本任务队列，一个与线程绑定的队列（当执行任务时，线程会从基本队列中获取任务并加入自己所绑定的任务队列中）
 + ForkJoinPool更加偏向于对任务的拆分，采用了“分而治之”的思想，更适合计算密集型的任务处理
 
+##### 4）使用场景
+
++ ThreadPoolExecutor：常见线程并发场景、阻塞时延比较长
++ ForkJoinPool：少量线程完成大量任务、非阻塞，能快速处理的业务（或阻塞时延比较少）
+
 #### 四、spring
 
 ##### 1） 如何结合Spring开发
@@ -138,8 +143,8 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
 #### 五、关于Java中的Unsafe类
 
 在对源码阅读的过程中，无论是JDK还是还是各大主流的框架源码都存在直接操作Unsafe这个类的场景，即使JDK并不提倡这么操作，仍然存在很多使用者通过它来完成自己的目的！
-在JDK的AtomicXXX的相关的类中，总是能看见它的身影！如下展示了AtomicInteger中对Unsafe实例的引用：
-![AtomicInteger](../image/jdk/AtomicInteger.png)
+在JDK的AtomicXXX的相关的类中，总是能看见它的身影！如下展示了AtomicInteger中对Unsafe实例的引用：\
+![AtomicInteger](../image/jdk/AtomicInteger.png)\
 众所周知，原子类采用的都是CAS机制实现，同时他们也是线程安全的类型！实现这个能力的核心就是Unsafe的原因，
 通过操作`unsafe.compareAndSwapXXXX`方法， 之所以不建议直接操作是因为它会直接从操作引用类型的指针完成数据修改，稍有不慎就可能出现内存泄露的危险！
 [baeldung Unsafe使用](https://www.baeldung.com/java-unsafe)讲述了这个类的使用方式，并对比了它和采用JDK关键字new进行实例化的区别。

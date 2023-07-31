@@ -36,7 +36,7 @@ public class UnsafeUsage {
 //        useUnsafe2ThrowException();
 //        useUnsafe2AllocateOffHeapMemory();
 //        useUnsafe2ImplCASCounter();
-        useUnsafe2SwitchThreadsContext();
+//        useUnsafe2SwitchThreadsContext();
     }
 
     /**
@@ -88,7 +88,8 @@ public class UnsafeUsage {
             array.set((long) Integer.MAX_VALUE + i, (byte) 3);
             sum += array.get((long) Integer.MAX_VALUE + i);
         }
-
+        System.out.printf("arr[0]=%d, arr[4]=%d, arr[Integer.MAX_VALUE]=%d, arr[Integer.MAX_VALUE + 1]=%d%n",
+                array.get(0), array.get(4), array.get(Integer.MAX_VALUE), array.get((long) Integer.MAX_VALUE + 1));
         System.out.printf("数组真实大小size：%d, 创建指定的size：%d%n", array.size(), SUPER_SIZE);
         System.out.printf("数组元素累加和sum：%d, 期待的结果：300%n", sum);
     }
@@ -102,7 +103,6 @@ public class UnsafeUsage {
         int NUM_OF_INCREMENTS = 10_000;
         ExecutorService service = Executors.newFixedThreadPool(NUM_OF_THREADS);
         CASCounter casCounter = new CASCounter();
-//        CountDownLatch latch = new CountDownLatch(NUM_OF_THREADS - 1);
         IntStream.rangeClosed(0, NUM_OF_THREADS - 1)
                 .forEach(i -> {
                     Future<?> future = service.submit(() -> IntStream

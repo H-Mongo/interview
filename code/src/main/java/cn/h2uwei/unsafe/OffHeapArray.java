@@ -10,8 +10,8 @@ import sun.misc.Unsafe;
  */
 public class OffHeapArray {
     private final static int BYTE = 1;
-    private long size;
-    private long address;
+    private final long size;
+    private final long address;
 
     public OffHeapArray(long size) {
         this.size = size;
