@@ -25,7 +25,7 @@ package cn.h2uwei.leetcode;
  * 进阶：链表可以选用迭代或递归方式完成反转。你能否用两种方法解决这道题？
  * </pre>
  *
- * @author zuweih
+ * @author h.mongo
  * @date 2023/8/7 9:40
  */
 public class Q206Solution {

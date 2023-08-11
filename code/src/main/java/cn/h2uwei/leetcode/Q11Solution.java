@@ -25,7 +25,7 @@ import cn.h2uwei.util.LeetcodeUtil;
  *  0 <= height[i] <= 104
  * </pre>
  *
- * @author zuweih
+ * @author h.mongo
  * @date 2023/8/4 13:13
  */
 public class Q11Solution {

@@ -3,7 +3,7 @@ package cn.h2uwei.util;
 /**
  * leetcode util
  *
- * @author zuweih
+ * @author h.mongo
  * @date 2023/8/4 13:52
  */
 public class LeetcodeUtil {
