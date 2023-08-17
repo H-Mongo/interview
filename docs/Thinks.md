@@ -158,6 +158,10 @@ Unsafe主要的功能点如下：
 + 通过`CompareAndSwap`实现CAS无锁操作
 + 利用`Park/Unpark`接口实现线程的切换
 
+#### 六、业务中的技术点及设计方案
+
++ 会员系统如何保证10w/qps？
+  > ES + Redis + MySQL 三级存储方案！
 
 
 
