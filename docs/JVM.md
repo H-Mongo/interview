@@ -140,7 +140,9 @@ jhat可以分析jmap -dump所产生的文件，并通过web页面为我们进行
 ## Agent探针技术
 
 在JDK的标准文档中，有对agent探针的介绍资料了，如果不是很了解，
-可以去google看看！在我们的开发中，我们或多或少的都有使用到过agent技术，只是我们并没有进行相应的功能开发，只是采用了第三方通过agent所开发和支持的功能，例如：SkyWalking，SandBox，Arthas等等优秀的开源项目都有运用到agent技术。官方文档介绍或说明：[instrument技术](https://docs.oracle.com/en/java/javase/11/docs/api/java.instrument/java/lang/instrument/package-summary.html)
+可以去google看看！在我们的开发中，我们或多或少的都有使用到过agent技术，只是我们并没有进行相应的功能开发，只是采用了第三方通过agent所开发和支持的功能，
+例如：SkyWalking，SandBox，Arthas等等优秀的开源项目都有运用到agent技术。
+官方文档介绍或说明：[instrument技术](https://docs.oracle.com/en/java/javase/11/docs/api/java.instrument/java/lang/instrument/package-summary.html)
 
 ### 如何实现一个自己的Agent
 
@@ -238,4 +240,5 @@ jhat可以分析jmap -dump所产生的文件，并通过web页面为我们进行
 
 ### Instrumentation接口
 
-这个API的作用非常强大，我们可以通过它获取已经加载的类信息、重新定义类、转化类信息等高级操作。这也就意味着我们可以通过在agent来修改JVM已加载的类数据信息，从而达到想要的目的！接口官方API文档信息：[Instrumentation](https://docs.oracle.com/en/java/javase/11/docs/api/java.instrument/java/lang/instrument/Instrumentation.html)
+这个API的作用非常强大，我们可以通过它获取已经加载的类信息、重新定义类、转化类信息等高级操作。这也就意味着我们可以通过在agent来修改JVM已加载的类数据信息，从而达到想要的目的！
+接口官方API文档信息：[Instrumentation](https://docs.oracle.com/en/java/javase/11/docs/api/java.instrument/java/lang/instrument/Instrumentation.html)
