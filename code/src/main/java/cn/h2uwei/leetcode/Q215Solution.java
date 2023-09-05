@@ -1,8 +1,6 @@
 package cn.h2uwei.leetcode;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.PriorityQueue;
+import java.util.*;
 
 /**
  * 215. 数组中的第K个最大元素 【中等】
@@ -37,17 +35,52 @@ import java.util.PriorityQueue;
 public class Q215Solution {
 
     public static void main(String[] args) {
-        Q215Solution solution = new Q215Solution();
-        System.out.println(solution.findKthLargest(new int[]{3, 2, 1, 5, 6, 4}, 2));
+//        Q215Solution solution = new Q215Solution();
+//        System.out.println(solution.findKthLargest(new int[]{3, 2, 1, 5, 6, 4}, 2));
+        new Q215Solution().maxProfit(new int[] {1,2,3,4,5});
     }
 
+    public int maxProfit(int[] prices) {
+        if (prices.length == 1) {
+            return 0;
+        }
+        if (prices.length == 2) {
+            return Math.max(0, prices[1] - prices[0]);
+        }
+        List<Integer> ret = new ArrayList<>();
+        int f = 0;
+        int s = 0;
+        for (int i = 0; i < prices.length - 1; i++) {
+            if (prices[i] < prices[i+1]) {
+                int r = prices[i+1] - prices[i];
+                ret.add(r);
+                if (r > f) {
+                    s = f;
+                    f = r;
+                } else if (r > s) {
+                    s = r;
+                }
+            }
+        }
+        for (int i = 0; i < ret.size(); i++) {
+            Integer r = ret.get(i);
+            if (r >  f) {
+                s = f;
+                f = r;
+            } else if (r > s) {
+                s = ret.get(i);
+            }
+        }
+
+        return f + s;
+    }
 
     public int findKthLargest(int[] nums, int k) {
         return -1;
     }
 
     /**
-     * 优先级队列的效果还不如数组排序呢
+     * 优先级队列的效果还不如数组排序呢，看了别人的解法，也是优先级队列。
      */
     public int findKthLargestUsePriorityQueue(int[] nums, int k) {
         PriorityQueue<Integer> queue = new PriorityQueue<>(Comparator.reverseOrder());
