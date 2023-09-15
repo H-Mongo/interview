@@ -1,5 +1,8 @@
 package cn.h2uwei.test;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -243,10 +246,99 @@ public class Main {
         // 这里选取第一个元素为基准点
         int base = nums[0];
         while (left < right) {
-            if (nums[]) {
-                //
+//            if (nums[]) {
+//                //
+//            }
+        }
+    }
+
+
+    /**
+     * 数组奇数偶数分组
+     */
+    public void test(int[] nums) {
+        int l = 0;
+        int r = nums.length - 1;
+        // 左侧是偶数，右侧是奇数
+        while (l < r) {
+            boolean left = nums[l] % 2 == 0;
+            boolean right = nums[r] % 2 == 0;
+            if (!left && right) { // 左奇右偶
+                swap(nums, l, r);
+                l++;
+                r++;
+            } else if (left && right) { // 左偶右偶
+                l++;
+            } else if (!left) { // 左奇右奇
+                r++;
+            } else { // 左偶右奇
+                l++;
+                r++;
             }
         }
     }
+
+    private static void swap(int[] nums, int i, int j) {
+        int t = nums[j];
+        nums[j] = nums[i];
+        nums[i] = t;
+    }
+
+
+    public void findTopN(File file, Date start, Date end) {
+        // weiboId,likeId,time
+        TreeMap<Weibo, Weibo> treeMap = new TreeMap<>();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                String[] split = line.split(",");
+                if (treeMap.containsKey(split[0])) {
+                    final Weibo weibo = treeMap.get(split[0]);
+                    weibo.likeCount++;
+                    Date date = new Date(split[2]);
+                    if (weibo.time.before(date)) {
+                        weibo.time = date;
+                    }
+                } else {
+                    Weibo weibo = new Weibo();
+                    weibo.weiboId =  Integer.parseInt(split[0]);
+                    weibo.likeCount = Integer.parseInt(split[1]);
+                    weibo.time = new Date(split[2]);
+                    treeMap.put(weibo, weibo);
+                }
+            }
+        } catch (Exception e) {
+            //
+        }
+    }
+
+    static class Weibo implements Comparator<Weibo> {
+        private int weiboId;
+        private int likeCount;
+        private Date time;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Weibo weibo = (Weibo) o;
+            return weiboId == weibo.weiboId;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(weiboId);
+        }
+
+        @Override
+        public int compare(Weibo o1, Weibo o2) {
+            if (o1.likeCount == o2.likeCount) {
+                return 0;
+            }
+            return o1.likeCount > o2.likeCount ? 1 : -1;
+        }
+    }
+
 
 }
